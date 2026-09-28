@@ -42,6 +42,7 @@ export function azureObj(credentials?: HostRule): azure.WebApi {
     maxRetries: 2,
   };
   if (config.timeout) {
+    logger.debug(`Azure: setting timeout to ${config.timeout}ms`);
     options.socketTimeout = config.timeout;
   }
   return new azure.WebApi(endpoint, authHandler, options);
