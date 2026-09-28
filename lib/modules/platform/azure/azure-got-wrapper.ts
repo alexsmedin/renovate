@@ -47,7 +47,7 @@ export function azureObj(credentials?: HostRule): azure.WebApi {
   const authHandler = getAuthenticationHandler(config);
   const options: any = {
     allowRetries: true,
-    maxRetries: 2,
+    maxRetries: 5,
   };
   if (config.timeout) {
     logger.debug(`Azure: setting timeout to ${config.timeout}ms`);
