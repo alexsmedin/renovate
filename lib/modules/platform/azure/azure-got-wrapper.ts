@@ -17,6 +17,7 @@ import { isProbablyJwt } from '../../../util/http/jwt.ts';
 
 const hostType = 'azure';
 let endpoint: string;
+let webApi: azure.WebApi | undefined;
 
 function getAuthenticationHandler(config: HostRule): IRequestHandler {
   if (!config.token && config.username && config.password) {
@@ -36,6 +37,13 @@ export function azureObj(credentials?: HostRule): azure.WebApi {
   if (!config.token && !(config.username && config.password)) {
     throw new Error(`No config found for azure`);
   }
+  
+  // Return cached instance if available
+  if (webApi) {
+    logger.debug('Azure: reusing cached WebApi instance');
+    return webApi;
+  }
+  
   const authHandler = getAuthenticationHandler(config);
   const options: any = {
     allowRetries: true,
@@ -45,7 +53,9 @@ export function azureObj(credentials?: HostRule): azure.WebApi {
     logger.debug(`Azure: setting timeout to ${config.timeout}ms`);
     options.socketTimeout = config.timeout;
   }
-  return new azure.WebApi(endpoint, authHandler, options);
+  
+  webApi = new azure.WebApi(endpoint, authHandler, options);
+  return webApi;
 }
 
 export function gitApi(credentials?: HostRule): Promise<IGitApi> {
