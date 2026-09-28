@@ -53,7 +53,14 @@ export function azureObj(credentials?: HostRule): azure.WebApi {
     logger.debug(`Azure: setting timeout to ${config.timeout}ms`);
     options.socketTimeout = config.timeout;
   }
-  
+  if (config.keepAlive) {
+    logger.debug('Azure: enabling connection pooling with keepAlive');
+    options.keepAlive = config.keepAlive;
+  }
+  if (config.concurrentRequestLimit) {
+    logger.debug(`Azure: limiting concurrent connections to ${config.concurrentRequestLimit}`);
+    options.maxSockets = config.concurrentRequestLimit;
+  }
   webApi = new azure.WebApi(endpoint, authHandler, options);
   return webApi;
 }
