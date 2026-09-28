@@ -37,10 +37,14 @@ export function azureObj(credentials?: HostRule): azure.WebApi {
     throw new Error(`No config found for azure`);
   }
   const authHandler = getAuthenticationHandler(config);
-  return new azure.WebApi(endpoint, authHandler, {
+  const options: any = {
     allowRetries: true,
     maxRetries: 2,
-  });
+  };
+  if (config.timeout) {
+    options.socketTimeout = config.timeout;
+  }
+  return new azure.WebApi(endpoint, authHandler, options);
 }
 
 export function gitApi(credentials?: HostRule): Promise<IGitApi> {
